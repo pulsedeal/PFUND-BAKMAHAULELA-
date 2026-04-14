@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PFUND ONLINE BAKMAHA ULELA 🎊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+
+<!-- Firebase (for shared real-time leaderboard) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+<style>
+/* ═══════════════════════════════════
+   ROOT VARIABLES
+═══════════════════════════════════ */
+:root {
+  --cr:   #8D153A;
+  --crd:  #6B0F2B;
+  --crx:  #a01940;
+  --gold: #FFD700;
+  --grn:  #00A550;
+  --org:  #FF7F00;
+  --bg:   #140810;
+  --bg2:  #220f18;
+  --bg3:  #2e1420;
+  --bg4:  #3a1828;
+  --txt:  #fff0dc;
+  --txt2: #c8889a;
+  --brd:  #4a2030;
+  --ok:   #0d3a1e;
+  --okb:  #1a7a40;
+  --okt:  #80ffb0;
+  --ng:   #3a0d0d;
+  --ngb:  #7a1a1a;
+  --ngt:  #ffaaaa;
+}
+
+* { box-sizing:border-box; margin:0; padding:0; }
+
+body {
+  font-family:'Noto Sans Sinhala',sans-serif;
+  background:var(--bg);
+  color:var(--txt);
+  min-height:100vh;
+}
+
+#app {
+  max-width:520px;
+  margin:0 auto;
+  position:relative;
+}
+
+.screen { display:none; }
+.screen.on { display:block; }
+
+/* ═══════════ HEADER ═══════════ */
+.hdr {
+  background:linear-gradient(135deg, var(--crd) 0%, var(--cr) 45%, #b01845 100%);
+  padding:14px 16px;
+  text-align:center;
+  border-bottom:3px solid var(--gold);
+  position:relative;
+  overflow:hidden;
+}
+.hdr::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; bottom:0;
+  background:repeating-linear-gradient(45deg,transparent,transparent 10px,
+    rgba(255,215,0,.03) 10px,rgba(255,215,0,.03) 20px);
+  pointer-events:none;
+}
+.hdr h1 {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:20px;
+  letter-spacing:2.5px;
+  color:var(--gold);
+  position:relative;
+  text-shadow:0 2px 10px rgba(0,0,0,.6);
+  line-height:1.2;
+}
+.hdr sub {
+  font-size:11.5px;
+  color:rgba(255,240,220,.82);
+  display:block;
+  margin-top:3px;
+  position:relative;
+}
+
+/* Festival top stripe */
+.stripe {
+  height:5px;
+  background:repeating-linear-gradient(90deg,
+    var(--cr) 0%,var(--cr) 20%,
+    var(--gold) 20%,var(--gold) 40%,
+    var(--grn) 40%,var(--grn) 60%,
+    var(--org) 60%,var(--org) 80%,
+    var(--cr) 80%,var(--cr) 100%);
+}
+
+/* ═══════════ BUTTONS ═══════════ */
+.btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  padding:12px 22px; border:none; border-radius:10px; cursor:pointer;
+  font-size:14px; font-weight:600;
+  font-family:'Noto Sans Sinhala',sans-serif;
+  transition:all .18s; text-decoration:none;
+}
+.btn:active { transform:scale(.95); }
+
+.b-red {
+  background:linear-gradient(135deg, var(--cr), var(--crd));
+  color:#fff;
+  border:1px solid rgba(255,215,0,.25);
+  box-shadow:0 4px 14px rgba(141,21,58,.45);
+}
+.b-red:hover { background:linear-gradient(135deg, var(--crx), var(--cr)); }
+
+.b-gold {
+  background:linear-gradient(135deg, #FFD700, #e6c000);
+  color:var(--crd);
+  font-weight:700;
+  box-shadow:0 4px 14px rgba(255,215,0,.3);
+}
+.b-gold:hover { background:linear-gradient(135deg,#ffe033,#FFD700); }
+
+.b-ghost {
+  background:transparent; color:var(--txt2);
+  border:1px solid var(--brd); font-size:13px; padding:9px 18px;
+}
+.b-ghost:hover { background:var(--bg3); }
+
+.b-danger { background:#3a0d0d; color:#ffaaaa; border:1px solid #7a1a1a; }
+.b-danger:hover { background:#4d1010; }
+
+/* ═══════════ INPUTS ═══════════ */
+.inp {
+  width:100%; padding:13px 16px;
+  border:2px solid var(--brd); border-radius:10px;
+  font-size:15px;
+  background:var(--bg2); color:var(--txt);
+  font-family:'Noto Sans Sinhala',sans-serif;
+  transition:border-color .2s;
+}
+.inp:focus { outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(255,215,0,.1); }
+.inp::placeholder { color:var(--txt2); opacity:.65; }
+
+/* ═══════════ MCQ OPTIONS ═══════════ */
+.opt {
+  display:block; width:100%; text-align:left;
+  padding:11px 14px; margin:6px 0;
+  border:2px solid var(--brd); border-radius:10px;
+  cursor:pointer; font-size:13.5px; line-height:1.6;
+  background:var(--bg2); color:var(--txt);
+  font-family:'Noto Sans Sinhala',sans-serif;
+  transition:all .15s;
+}
+.opt:hover:not([disabled]) { border-color:var(--gold); background:var(--bg3); }
+.opt.ok  { background:var(--ok)!important; border-color:var(--okb)!important; color:var(--okt)!important; }
+.opt.no  { background:var(--ng)!important; border-color:var(--ngb)!important; color:var(--ngt)!important; }
+.opt[disabled] { cursor:default; }
+
+/* ═══════════ FEEDBACK ═══════════ */
+.fb {
+  display:none; padding:11px 15px;
+  border-radius:10px; font-size:13px; font-weight:600;
+  margin:10px 0; border:2px solid;
+  animation:fadein .3s ease;
+}
+.fb.ok { background:var(--ok); border-color:var(--okb); color:var(--okt); }
+.fb.no { background:var(--ng); border-color:var(--ngb); color:var(--ngt); }
+
+/* ═══════════ PROGRESS ═══════════ */
+.pbar-wrap { height:6px; background:var(--bg4); border-radius:3px; margin-bottom:13px; }
+.pbar { height:100%; background:linear-gradient(90deg,var(--cr),var(--gold)); border-radius:3px; transition:width .4s; }
+
+/* ═══════════ LEADERBOARD TABLE ═══════════ */
+.lbt { width:100%; border-collapse:collapse; font-size:13px; }
+.lbt thead tr { background:var(--cr); color:var(--gold); }
+.lbt th { padding:10px 8px; text-align:left; font-weight:700; letter-spacing:.5px; font-size:12px; }
+.lbt td { padding:10px 8px; border-bottom:1px solid var(--brd); }
+.lbt tbody tr:nth-child(1) td { background:rgba(255,215,0,.07); }
+.lbt tbody tr:nth-child(2) td { background:rgba(192,192,192,.04); }
+.lbt tbody tr:nth-child(3) td { background:rgba(205,127,50,.04); }
+.lbt tbody tr:hover td { background:var(--bg3); }
+
+/* ═══════════ STAT CARDS ═══════════ */
+.sc-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+.sc-card { background:var(--bg2); border:1px solid var(--brd); border-radius:10px; padding:12px; text-align:center; }
+.sc-card .lbl { font-size:10px; color:var(--txt2); margin-bottom:4px; text-transform:uppercase; letter-spacing:.5px; }
+.sc-card .val { font-size:28px; font-weight:700; color:var(--gold); font-family:'Bebas Neue',sans-serif; }
+
+/* ═══════════ BIG SCORE ═══════════ */
+.bscore {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:80px; color:var(--gold); line-height:1;
+  text-shadow:0 4px 20px rgba(255,215,0,.35);
+}
+
+/* ═══════════ LIVE BADGE ═══════════ */
+.live { display:inline-flex; align-items:center; gap:4px;
+  background:var(--grn); color:#fff; font-size:9px;
+  padding:2px 7px; border-radius:20px; font-weight:700; vertical-align:middle; }
+.livdot { width:5px; height:5px; background:#fff; border-radius:50%;
+  animation:pulse 1.2s ease infinite; }
+
+/* ═══════════ ADMIN TABLE ═══════════ */
+.admt { width:100%; border-collapse:collapse; font-size:12px; }
+.admt th { background:var(--bg4); padding:8px 7px; text-align:left; color:var(--gold); font-size:11px; letter-spacing:.5px; }
+.admt td { padding:8px 7px; border-bottom:1px solid var(--brd); }
+
+/* ═══════════ CONFETTI ═══════════ */
+.cf { position:fixed; top:-12px; animation:cf-fall linear forwards; border-radius:2px; z-index:9999; pointer-events:none; }
+@keyframes cf-fall { to { transform:translateY(110vh) rotate(720deg); opacity:0; } }
+
+/* ═══════════ ANIMATIONS ═══════════ */
+@keyframes fadein { from{opacity:0;transform:translateY(-5px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pulse  { 0%,100%{opacity:1} 50%{opacity:.3} }
+@keyframes shake  {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-7px) rotate(-2deg)}
+  40%{transform:translateX(7px) rotate(2deg)}
+  60%{transform:translateX(-4px) rotate(-1deg)}
+  80%{transform:translateX(4px) rotate(1deg)}
+}
+@keyframes bounce { 0%{transform:scale(1)} 40%{transform:scale(1.12)} 70%{transform:scale(.96)} 100%{transform:scale(1)} }
+@keyframes pop    { 0%{transform:scale(.7);opacity:0} 60%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+
+/* ═══════════ SCROLLBAR ═══════════ */
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--brd); border-radius:2px; }
+
+/* ═══════════ ERROR BOX ═══════════ */
+.err-box {
+  display:none; color:#ff8080; font-size:12px;
+  margin:6px 0; padding:7px 12px;
+  background:rgba(100,0,0,.4); border:1px solid var(--ngb);
+  border-radius:7px;
+}
+
+canvas { max-width:100%; display:block; }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ████ WELCOME SCREEN ████ -->
+<div id="sc-w" class="screen on">
+  <div class="stripe"></div>
+  <div class="hdr">
+    <h1>🎊 PFUND ONLINE BAKMAHA ULELA 🎊</h1>
+    <sub>ජනාධිපති අරමුදල &nbsp;|&nbsp; ලිස්සන ගහ ක්‍රීඩාව 🌸 2025</sub>
+  </div>
+
+  <div style="padding:16px">
+    <div style="text-align:center;margin:6px 0 14px">
+      <canvas id="cv-w" width="300" height="380" style="margin:0 auto"></canvas>
+    </div>
+
+    <div style="max-width:300px;margin:0 auto">
+      <p style="text-align:center;font-size:13px;color:var(--txt2);margin-bottom:10px">
+        🌺 ඔබේ නම ඇතුළු කර ලිස්සන ගහ නගින්න! 🌺
+      </p>
+      <input id="inp-n" class="inp" type="text" placeholder="ඔබේ නම ලියන්න..." maxlength="25" autocomplete="off"/>
+      <div id="n-err" class="err-box">⚠ කරුණාකර නම ඇතුළු කරන්න!</div>
+      <button class="btn b-gold" onclick="startGame()" style="width:100%;margin-top:10px;font-size:16px;padding:14px">
+        🎮&nbsp; ක්‍රීඩාව ආරම්භ කරන්න!
+      </button>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:10px">
+        <button class="btn b-ghost" onclick="goTo('lb')">🏆&nbsp;Leaderboard</button>
+        <button class="btn b-ghost" onclick="goTo('adm')">⚙&nbsp;Admin</button>
+      </div>
+      <p id="w-mode" style="text-align:center;font-size:10px;color:var(--brd);margin-top:12px"></p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ████ GAME SCREEN ████ -->
+<div id="sc-g" class="screen">
+  <div class="stripe"></div>
+  <div class="hdr">
+    <h1>🎊 PFUND ONLINE BAKMAHA ULELA 🎊</h1>
+    <sub id="g-sub">ප්‍රශ්නය 1 / 10 &nbsp;|&nbsp; නිවැරදි: 0</sub>
+  </div>
+
+  <div style="padding:14px;display:flex;gap:12px">
+    <!-- Mini pole -->
+    <div style="flex-shrink:0">
+      <canvas id="cv-g" width="52" height="270"></canvas>
+    </div>
+    <!-- Questions -->
+    <div style="flex:1;min-width:0">
+      <div class="pbar-wrap"><div id="pbar" class="pbar" style="width:0%"></div></div>
+      <p id="q-lbl" style="font-size:11px;color:var(--txt2);margin-bottom:5px"></p>
+      <p id="q-txt" style="font-size:13.5px;font-weight:600;line-height:1.75;margin-bottom:10px;color:var(--txt)"></p>
+      <div id="q-opts"></div>
+      <div id="q-fb" class="fb"></div>
+      <button id="btn-nxt" onclick="nextQ()" class="btn b-red" style="display:none;margin-top:8px;font-size:13px">
+        ඊළඟ ප්‍රශ්නය →
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ████ RESULTS SCREEN ████ -->
+<div id="sc-r" class="screen">
+  <div class="stripe"></div>
+  <div class="hdr">
+    <h1>🎊 PFUND ONLINE BAKMAHA ULELA 🎊</h1>
+    <sub>ක්‍රීඩාව අවසන්! &nbsp;🎉</sub>
+  </div>
+
+  <div style="padding:20px;text-align:center">
+    <canvas id="cv-r" width="200" height="315" style="margin:0 auto 8px"></canvas>
+    <p id="r-nm" style="font-size:22px;font-weight:700;color:var(--txt);margin-bottom:3px"></p>
+    <div id="r-sc" class="bscore" style="margin:8px 0;animation:pop .5s ease"></div>
+    <p id="r-rk" style="font-size:13px;color:var(--txt2);margin-bottom:8px"></p>
+    <p id="r-mg" style="font-size:15px;padding:13px 16px;background:var(--bg2);border-radius:10px;border:1px solid var(--brd);margin-bottom:20px"></p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn b-red" onclick="goTo('lb')">🏆&nbsp;Leaderboard</button>
+      <button class="btn b-ghost" onclick="goTo('w')">නැවත ක්‍රීඩා කරන්න</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ████ LEADERBOARD SCREEN ████ -->
+<div id="sc-lb" class="screen">
+  <div class="stripe"></div>
+  <div class="hdr">
+    <h1>🎊 PFUND ONLINE BAKMAHA ULELA 🎊</h1>
+    <sub>🏆&nbsp; ශ්‍රේණිගත කිරීම &nbsp;<span class="live"><span class="livdot"></span>LIVE</span></sub>
+  </div>
+
+  <div style="padding:14px">
+    <div style="text-align:center;margin-bottom:12px">
+      <canvas id="cv-lb" width="320" height="380" style="margin:0 auto"></canvas>
+    </div>
+    <div id="lb-wrap"></div>
+    <div style="text-align:center;margin-top:14px">
+      <button class="btn b-ghost" onclick="goTo('w')">← ආපසු</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ████ ADMIN SCREEN ████ -->
+<div id="sc-adm" class="screen">
+  <div class="stripe"></div>
+  <div class="hdr">
+    <h1>🎊 PFUND ONLINE BAKMAHA ULELA 🎊</h1>
+    <sub>⚙ Admin Dashboard</sub>
+  </div>
+
+  <!-- Login -->
+  <div id="adm-lgn" style="padding:24px;max-width:280px;margin:0 auto">
+    <p style="text-align:center;font-size:14px;color:var(--txt2);margin-bottom:16px">Admin Login</p>
+    <input id="adm-u" class="inp" placeholder="Username" style="margin-bottom:8px" autocomplete="off"/>
+    <input id="adm-p" class="inp" type="password" placeholder="Password" style="margin-bottom:12px"/>
+    <button class="btn b-red" onclick="doLogin()" style="width:100%">Login</button>
+    <div id="adm-err" class="err-box" style="text-align:center">❌ Username හෝ Password වැරදියි!</div>
+    <div style="text-align:center;margin-top:10px">
+      <button class="btn b-ghost" onclick="goTo('w')">← ආපසු</button>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="adm-dsh" style="display:none;padding:14px">
+    <div class="sc-grid" id="adm-stats"></div>
+    <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--brd)">
+      <table class="admt">
+        <thead><tr>
+          <th>#</th><th>නම</th><th>නිවැරදි</th><th>ලකුණු</th><th>දිනය/වේලාව</th>
+        </tr></thead>
+        <tbody id="adm-tb"></tbody>
+      </table>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap">
+      <button class="btn b-ghost" onclick="goTo('w')">← ආපසු</button>
+      <button class="btn b-danger" onclick="doClear()">🗑 Clear All Data</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- #app -->
+
+
+<script>
+/* ══════════════════════════════════════════════════════
+   🔥 FIREBASE CONFIG
+   Replace below values with your Firebase project.
+   Leave as-is → falls back to localStorage (single device).
+   Setup guide at bottom of file.
+══════════════════════════════════════════════════════ */
+const FB_CFG = {// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyByMTnOcOyXM11rSGj7YHpJ5rRaSgvLB2o",
+  authDomain: "pfund-lissana-gaha-game.firebaseapp.com",
+  databaseURL: "https://pfund-lissana-gaha-game-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "pfund-lissana-gaha-game",
+  storageBucket: "pfund-lissana-gaha-game.firebasestorage.app",
+  messagingSenderId: "693146425683",
+  appId: "1:693146425683:web:6577342f4bafbbdda429a6",
+  measurementId: "G-9Y1L6Z2F9X"
+};
+  apiKey:      "YOUR_FIREBASE_API_KEY",
+  authDomain:  "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:   "YOUR_PROJECT_ID",
+  appId:       "YOUR_APP_ID"
+};
+const USE_FB = FB_CFG.apiKey !== "YOUR_FIREBASE_API_KEY";
+
+/* ══════════════════════════════════════════════════════
+   ADMIN & CONSTANTS
+══════════════════════════════════════════════════════ */
+const ADMIN  = { u:"PFUND", p:"avurudu" };
+const LS_KEY = "pfund_ulela_2025_v2";
+const TOTAL_Q = 10;
+
+/* ══════════════════════════════════════════════════════
+   MCQ QUESTIONS  (10 questions)
+══════════════════════════════════════════════════════ */
+const QS = [
+  {
+    q:"ජනාධිපති අරමුදලේ වෛද්‍යාධාර ක්‍රමපත්‍ර ගොනු කිරීම සඳහා නිල website ලිපිනය කුමක්ද?",
+    o:["www.presidentfund.gov.lk","www.presidentsfund.gov.lk","www.pfund.lk","www.presidentfund.lk"],
+    a:1
+  },
+  {
+    q:"වෛද්‍යාධාර ඉල්ලුම් ගොනු කළ යුතු නිල email ලිපිනය:",
+    o:["fundsecretary@presidentsoffice.lk","medpay.prefund@presidentsoffice.lk","info@pfund.lk","appeal@presidentsoffice.lk"],
+    a:1
+  },
+  {
+    q:"CABG (Coronary Artery Bypass Graft Surgery) ශල්‍යකර්මය සඳහා ජනාධිපති අරමුදලින් ලබාදෙන මුදල:",
+    o:["රු. 150,000","රු. 200,000","රු. 250,000","රු. 300,000"],
+    a:3
+  },
+  {
+    q:"ජීවනෝපාය රැකියාවක් සඳහා ගොනු ලේඛනය 17 ලෙස ඉදිරිපත් කළ යුතු ලේඛනය:",
+    o:["රැකියාව කරන ස්ථානයේ ඡායාරූප","වෘත්තීය නිපුණතාව පිළිබඳ ලේඛන සහ මිල ඇස්තමේන්තුව","ග්‍රාම නිලධාරී සහතිකය","වෙනත් රැකියා නොකරන බවට සහතිකය"],
+    a:1
+  },
+  {
+    q:"වෘත්තීය පුහුණු පාඨමාලාවක් සඳහා ඉදිරිපත් කළ යුතු ලේඛනය:",
+    o:["පාසල් අස්වීමේ සහතිකය","උසස් පෙළ ප්‍රතිඵල සටහන","වෘත්තීය ආයතනයෙන් ලිපිය (ගාස්තු සහිතව)","විශ්වවිද්‍යාල ප්‍රවේශ කොමිසමේ ලිපිය"],
+    a:2
+  },
+  {
+    q:"පාසල් දරුවෙකුට අධ්‍යාපන ආධාර සඳහා ඉදිරිපත් කළ යුතු ලිපිය ලබා ගත යුත්තේ:",
+    o:["ග්‍රාම නිලධාරීයාගෙන්","ප්‍රාදේශීය ලේකම්ගෙන්","පාසලේ විදුහල්පතිගෙන්","කලාප අධ්‍යාපන අධ්‍යක්ෂගෙන්"],
+    a:2
+  },
+  {
+    q:"ස්ටෙන්ට් 2ක් භාවිත PTCA ප්‍රතිකාර සඳහා ජනාධිපති අරමුදලින් ලබාදෙන මුදල:",
+    o:["රු. 200,000","රු. 250,000","රු. 350,000","රු. 300,000"],
+    a:2
+  },
+  {
+    q:"Total Hip Replacement (දෙපස) ශල්‍යකර්මය සඳහා ජනාධිපති අරමුදලින් ලබාදෙන නිශ්චිත මුදල:",
+    o:["රු. 150,000","රු. 175,000","රු. 300,000","රු. 350,000"],
+    a:3
+  },
+  {
+    q:"ධීවර අධ්‍යාපන ආධාර සඳහා ඉදිරිපත් කළ ආදායම් සහතිකය ලබා ගත යුත්තේ:",
+    o:["ප්‍රාදේශීය ලේකම්ගෙන්","ග්‍රාම නිලධාරීයාගෙන්","විදුහල්පතිගෙන්","සමෘද්ධි නිලධාරීයාගෙන්"],
+    a:1
+  },
+  {
+    q:"ශල්‍යකර්මයට පෙර ලබා දෙන වෛද්‍ය ඇස්තමේන්තු validity කාලය:",
+    o:["මාස 01","මාස 03","මාස 06","මාස 12"],
+    a:2
+  }
+];
+
+/* ══════════════════════════════════════════════════════
+   FUNNY MESSAGES
+══════════════════════════════════════════════════════ */
+const WRONG = [
+  "ලිස්සා ගෙන ගියා! 😅 ෆයිල් open කරාද?",
+  "Aiyo! ගහෙන් ඇද වැටුණා! 🙈",
+  "නෑ! ඔය නෙවෙයි! 😬 Secretary ළඟ ඇහුවෙ නෑද?",
+  "ගෙදර ගිහින් ඉගෙනගන්න! 😂",
+  "OMG! ලිස්සෙලා! 😱 AI ළඟ Help ගන්න!",
+  "Helo?! Secretary ළඟ ඇහෙනවා! 😄",
+];
+const RIGHT = [
+  "ජය! ගහ ඉහළට! 🎉 Excellent!",
+  "නිවැරදියි! ලිස්සා ඉහළ ගිය! 💪",
+  "ශ්‍රේෂ්ඨයි! ⭐ Smart worker!",
+  "ගොඩාක් හොඳෑ! 🚀 Keep climbing!",
+  "Wow! ක්‍රීඩකයා ඉහළ! 🔥",
+  "Bravo! PFUND Expert! 🏆",
+];
+const RESULT = [
+  "😅 ගහෙන් ඇද වැටුණා! Next time ෆයිල් read කරන්න!",
+  "🙈 Aiyo! Office ක්‍රීඩාවෙ ලිස්සෙලා!",
+  "🥉 ටිකක් ඉගෙනගන්න! ෆයිල් කාමරේ යන්න!",
+  "🥉 ප්‍රයත්නය හොඳෑ! Try again!",
+  "🥈 ඉදිරියට යයි! Nice try!",
+  "🥈 හොඳ ප්‍රදර්ශනයක්! Pro වෙනවා!",
+  "🥇 Excellent! PFUND Expert!",
+  "🥇 ඉතා විශිෂ්ටයි! Senior level!",
+  "🏆 Outstanding! DG Material! 🎖",
+  "🏆 Incredible! ජනාධිපති Award! 🎊",
+  "🏆 ලිස්සන ගහේ ශිඛරය! PERFECT! 🎉🎊🥳",
+];
+
+/* ══════════════════════════════════════════════════════
+   CANVAS COLORS
+══════════════════════════════════════════════════════ */
+const C = {
+  pole:   '#5D2E0C',
+  pshne:  '#9B6A3A',
+  bg:     '#140810',
+  gold:   '#FFD700',
+  cr:     '#8D153A',
+  grn:    '#00A550',
+  org:    '#FF7F00',
+  txt2:   '#c8889a',
+  ok:     '#00E676',
+};
+const PCOLS = ['#FFD700','#00E676','#FF6B6B','#64B5F6','#FF8A65','#CE93D8','#80DEEA','#FFCC80'];
+
+/* ══════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════ */
+let G  = { name:'', qi:0, score:0, done:false };
+let PL = [];  // players array sorted by score desc
+let fbDb=null, fbRef=null, fbLsn=null;
+let lastAns = null; // true/false/null for animation
+
+/* ══════════════════════════════════════════════════════
+   FIREBASE INIT
+══════════════════════════════════════════════════════ */
+function initFB(){
+  if(!USE_FB) {
+    document.getElementById('w-mode').textContent = '📱 Local Mode (single device)';
+    return;
+  }
+  try{
+    firebase.initializeApp(FB_CFG);
+    fbDb  = firebase.database();
+    fbRef = fbDb.ref('pfund_ulela_v2/players');
+    document.getElementById('w-mode').textContent = '🌐 Online Mode — shared leaderboard live!';
+    console.log("✓ Firebase connected");
+  }catch(e){
+    console.warn("Firebase failed →", e);
+    document.getElementById('w-mode').textContent = '📱 Offline fallback mode';
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   DATA LAYER
+══════════════════════════════════════════════════════ */
+async function loadPL(){
+  if(USE_FB && fbRef){
+    return new Promise(res=>{
+      fbRef.once('value', snap=>{
+        const d=snap.val();
+        PL = d ? Object.values(d) : [];
+        sortPL(); res();
+      }, ()=>{ PL=lsLoad(); res(); });
+    });
+  }
+  PL = lsLoad();
+}
+
+async function savePL(entry){
+  const key = entry.name.toLowerCase().replace(/[\s\W]/g,'_').slice(0,30);
+  if(USE_FB && fbRef){
+    try{ await fbRef.child(key).set(entry); return; }catch(e){}
+  }
+  const idx = PL.findIndex(p=>p.name.toLowerCase()===entry.name.toLowerCase());
+  if(idx>=0){ if(entry.score>=PL[idx].score) PL[idx]=entry; }
+  else PL.push(entry);
+  sortPL(); lsSave();
+}
+
+async function clearPL(){
+  if(USE_FB && fbRef){ try{ await fbRef.remove(); }catch(e){} }
+  PL=[]; lsSave();
+}
+
+function sortPL(){ PL.sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name)); }
+
+function lsLoad(){
+  try{ const d=localStorage.getItem(LS_KEY); return d?JSON.parse(d):[]; }catch(e){ return []; }
+}
+function lsSave(){
+  try{ localStorage.setItem(LS_KEY,JSON.stringify(PL)); }catch(e){}
+}
+
+function startFBListen(){
+  if(!USE_FB||!fbRef) return;
+  stopFBListen();
+  fbLsn = fbRef.on('value', snap=>{
+    const d=snap.val();
+    PL = d ? Object.values(d) : [];
+    sortPL();
+    if(document.getElementById('sc-lb').classList.contains('on')) renderLB();
+    if(document.getElementById('sc-adm').classList.contains('on') &&
+       document.getElementById('adm-dsh').style.display!=='none') renderAdmDsh();
+  });
+}
+function stopFBListen(){
+  if(fbLsn&&fbRef){ fbRef.off('value',fbLsn); fbLsn=null; }
+}
+
+/* ══════════════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════════════ */
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById('sc-'+id).classList.add('on');
+  if(id==='w'){ drawW(); }
+  if(id==='lb'){ loadPL().then(()=>{ renderLB(); startFBListen(); }); }
+  if(id==='adm'){
+    document.getElementById('adm-lgn').style.display='block';
+    document.getElementById('adm-dsh').style.display='none';
+    document.getElementById('adm-err').style.display='none';
+  }
+  if(id==='r'){ drawR(); }
+  window.scrollTo(0,0);
+}
+
+/* ══════════════════════════════════════════════════════
+   START GAME
+══════════════════════════════════════════════════════ */
+function startGame(){
+  const n = document.getElementById('inp-n').value.trim();
+  const e = document.getElementById('n-err');
+  if(!n){ e.style.display='block'; document.getElementById('inp-n').focus(); return; }
+  e.style.display='none';
+  G = { name:n, qi:0, score:0, done:false };
+  lastAns = null;
+  stopFBListen();
+  goTo('g');
+  renderQ();
+}
+
+/* ══════════════════════════════════════════════════════
+   GAME
+══════════════════════════════════════════════════════ */
+function renderQ(){
+  const q = QS[G.qi];
+  document.getElementById('g-sub').textContent =
+    `ප්‍රශ්නය ${G.qi+1} / ${TOTAL_Q} \u00a0|\u00a0 නිවැරදි: ${G.score}`;
+  document.getElementById('pbar').style.width = `${(G.qi/TOTAL_Q)*100}%`;
+  document.getElementById('q-lbl').textContent = `📋 ප්‍රශ්නය ${G.qi+1} / ${TOTAL_Q}`;
+  document.getElementById('q-txt').textContent = q.q;
+
+  const od = document.getElementById('q-opts'); od.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    const b = document.createElement('button');
+    b.className='opt';
+    b.innerHTML = `<span style="font-weight:700;color:var(--txt2);margin-right:8px">${l}.</span>${q.o[i]}`;
+    b.onclick = ()=>answerQ(i);
+    od.appendChild(b);
+  });
+
+  document.getElementById('q-fb').style.display='none';
+  document.getElementById('q-fb').className='fb';
+  document.getElementById('btn-nxt').style.display='none';
+  drawG();
+}
+
+function answerQ(idx){
+  const q   = QS[G.qi];
+  const ok  = idx === q.a;
+  if(ok) G.score++;
+  lastAns = ok;
+
+  document.querySelectorAll('.opt').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.a) b.classList.add('ok');
+    else if(i===idx&&!ok) b.classList.add('no');
+  });
+
+  const fb = document.getElementById('q-fb');
+  fb.style.display='block';
+  fb.className = ok ? 'fb ok' : 'fb no';
+  if(ok){
+    fb.textContent = RIGHT[Math.floor(Math.random()*RIGHT.length)];
+  }else{
+    const rm = WRONG[Math.floor(Math.random()*WRONG.length)];
+    fb.textContent = `${rm}\u00a0\u00a0|\u00a0\u00a0✓ නිවැරදි: ${'ABCD'[q.a]}. ${q.o[q.a]}`;
+  }
+
+  document.getElementById('g-sub').textContent =
+    `ප්‍රශ්නය ${G.qi+1} / ${TOTAL_Q} \u00a0|\u00a0 නිවැරදි: ${G.score}`;
+
+  const nb = document.getElementById('btn-nxt');
+  nb.style.display='inline-flex';
+  nb.textContent = G.qi===TOTAL_Q-1 ? 'ප්‍රතිඵල බලන්න 🎉' : 'ඊළඟ ප්‍රශ්නය →';
+
+  drawG(ok);
+}
+
+async function nextQ(){
+  G.qi++;
+  lastAns = null;
+  if(G.qi >= TOTAL_Q){
+    // Game finished
+    const now = new Date();
+    const entry = {
+      name:  G.name,
+      score: G.score,
+      correct: G.score,
+      total: TOTAL_Q,
+      date:  `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`,
+      time:  now.toLocaleTimeString('en-LK',{hour:'2-digit',minute:'2-digit'}),
+      ts:    now.getTime()
+    };
+    await loadPL();
+    const ex = PL.find(p=>p.name.toLowerCase()===G.name.toLowerCase());
+    if(!ex || G.score >= ex.score){ await savePL(entry); }
+    await loadPL();
+
+    const rank = PL.findIndex(p=>p.name.toLowerCase()===G.name.toLowerCase())+1;
+    document.getElementById('r-nm').textContent = G.name;
+    document.getElementById('r-sc').textContent = `${G.score} / ${TOTAL_Q}`;
+    document.getElementById('r-rk').textContent =
+      `🏅 ශ්‍රේණිය: #${rank} / ${PL.length} දෙනා`;
+    document.getElementById('r-mg').textContent = RESULT[Math.min(G.score,10)];
+
+    goTo('r');
+    if(G.score>=7) confetti();
+    return;
+  }
+  renderQ();
+}
+
+/* ══════════════════════════════════════════════════════
+   LEADERBOARD
+══════════════════════════════════════════════════════ */
+function renderLB(){
+  drawLB();
+  const w = document.getElementById('lb-wrap');
+  if(!PL.length){
+    w.innerHTML='<p style="text-align:center;color:var(--txt2);padding:20px;font-size:14px">ක්‍රීඩකයන් නොමැත 😴</p>';
+    return;
+  }
+  const M = ['🥇','🥈','🥉'];
+  w.innerHTML=`
+  <table class="lbt">
+    <thead><tr>
+      <th>&nbsp;</th><th>ක්‍රීඩකයා</th><th>නිවැරදි</th><th>ලකුණු</th><th>දිනය</th>
+    </tr></thead>
+    <tbody>${PL.map((p,i)=>`
+    <tr>
+      <td style="font-size:16px">${i<3?M[i]:'<span style="color:var(--txt2);font-size:12px">#'+(i+1)+'</span>'}</td>
+      <td style="font-weight:${i===0?'700':'400'};color:${i===0?'#FFD700':'var(--txt)'}">${p.name}</td>
+      <td style="color:#00E676;font-size:12px">${'▓'.repeat(p.score)}${'░'.repeat(10-p.score)}</td>
+      <td style="font-weight:700;color:#FFD700;font-family:'Bebas Neue',sans-serif;font-size:18px">${p.score}<span style="font-size:11px;color:var(--txt2)">/10</span></td>
+      <td style="color:var(--txt2);font-size:11px">${p.date||''}</td>
+    </tr>`).join('')}
+    </tbody>
+  </table>`;
+}
+
+/* ══════════════════════════════════════════════════════
+   ADMIN
+══════════════════════════════════════════════════════ */
+function doLogin(){
+  const u=document.getElementById('adm-u').value.trim();
+  const p=document.getElementById('adm-p').value;
+  const e=document.getElementById('adm-err');
+  if(u===ADMIN.u && p===ADMIN.p){
+    e.style.display='none';
+    document.getElementById('adm-lgn').style.display='none';
+    document.getElementById('adm-dsh').style.display='block';
+    loadPL().then(renderAdmDsh);
+    startFBListen();
+  }else{
+    e.style.display='block';
+    document.getElementById('adm-p').value='';
+    const ui=document.getElementById('adm-u');
+    ui.style.animation='shake .5s';
+    setTimeout(()=>ui.style.animation='',600);
+  }
+}
+
+function renderAdmDsh(){
+  const tot=PL.length;
+  const avg=tot?(PL.reduce((s,p)=>s+p.score,0)/tot).toFixed(1):0;
+  const prf=PL.filter(p=>p.score===10).length;
+  document.getElementById('adm-stats').innerHTML=`
+    <div class="sc-card"><div class="lbl">ක්‍රීඩකයන්</div><div class="val">${tot}</div></div>
+    <div class="sc-card"><div class="lbl">සාමාන්‍ය</div><div class="val">${avg}</div></div>
+    <div class="sc-card"><div class="lbl">Perfect 🏆</div><div class="val">${prf}</div></div>
+  `;
+  document.getElementById('adm-tb').innerHTML=PL.map((p,i)=>`
+    <tr>
+      <td style="color:var(--txt2)">${i+1}</td>
+      <td style="font-weight:600;color:${i===0?'#FFD700':'var(--txt)'}">${p.name}</td>
+      <td style="color:#00E676;font-size:11px">${'▓'.repeat(p.score)}${'░'.repeat(10-p.score)}</td>
+      <td style="font-weight:700;color:#FFD700">${p.score}/10</td>
+      <td style="color:var(--txt2);font-size:11px">${p.date||''} ${p.time||''}</td>
+    </tr>`).join('');
+}
+
+async function doClear(){
+  if(confirm('ඔබට සැබෑවටම සියළු Data delete කිරීමට ඕනෙ ද?\n⚠ මෙය undo කළ නොහැකිය!')){
+    await clearPL();
+    renderAdmDsh();
+    alert('Data clear කරා ✓');
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   CANVAS DRAWING UTILITIES
+══════════════════════════════════════════════════════ */
+// Rounded rect polyfill
+function rr(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+// Score → Y pixel
+function sY(score,top,bot,tot=10){ return bot-(score/tot)*(bot-top); }
+
+// ─── Sri Lanka Flag ───────────────────
+function drawFlag(ctx,x,y,w,h){
+  const s=w/7;
+  // Maroon background
+  ctx.fillStyle='#8D153A'; rr(ctx,x,y,w,h,2); ctx.fill();
+  // Orange band
+  ctx.fillStyle='#FF7F00'; ctx.fillRect(x,y,s,h);
+  // Green band
+  ctx.fillStyle='#00A550'; ctx.fillRect(x+s,y,s,h);
+  // Border
+  ctx.strokeStyle='#FFD700'; ctx.lineWidth=1.5;
+  rr(ctx,x,y,w,h,2); ctx.stroke();
+  // Stylized lion as gear-circle (iconic enough)
+  ctx.fillStyle='#FFD700';
+  ctx.beginPath(); ctx.arc(x+w*.65,y+h*.5,h*.22,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#8D153A'; ctx.font=`bold ${h*.34}px serif`;
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('ශ්',x+w*.65,y+h*.5+1);
+  ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+}
+
+// ─── Pole + shine ─────────────────────
+function drawPole(ctx,cx,top,bot,pw=16){
+  const g=ctx.createLinearGradient(cx-pw/2,0,cx+pw/2,0);
+  g.addColorStop(0,'#2d1006');
+  g.addColorStop(.25,'#9B6A3A');
+  g.addColorStop(.55,'#5D2E0C');
+  g.addColorStop(1,'#2d1006');
+  ctx.fillStyle=g;
+  rr(ctx,cx-pw/2,top,pw,bot-top,5); ctx.fill();
+  // shine strip
+  ctx.fillStyle='rgba(220,180,140,.2)';
+  rr(ctx,cx-pw/2+3,top,3,bot-top,1); ctx.fill();
+}
+
+// ─── Ground grass ─────────────────────
+function drawGround(ctx,cx,y){
+  ctx.fillStyle='#1a4d0d';
+  ctx.beginPath(); ctx.ellipse(cx,y+9,34,10,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#2d7a1a';
+  ctx.beginPath(); ctx.ellipse(cx,y+6,26,7,0,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='#3d9a25'; ctx.lineWidth=2;
+  [-16,-9,-1,7,15].forEach(ox=>{
+    ctx.beginPath(); ctx.moveTo(cx+ox,y+3);
+    ctx.quadraticCurveTo(cx+ox-3,y-4,cx+ox-5,y-9); ctx.stroke();
+  });
+}
+
+// ─── Ruler marks ─────────────────────
+function drawRuler(ctx,cx,top,bot,pw=16){
+  for(let i=0;i<=10;i++){
+    const y=bot-(i/10)*(bot-top);
+    const tl=i%5===0?12:5;
+    ctx.strokeStyle='rgba(255,215,0,.35)'; ctx.lineWidth=.7;
+    ctx.beginPath(); ctx.moveTo(cx-pw/2-tl,y); ctx.lineTo(cx-pw/2,y); ctx.stroke();
+    if(i%5===0){
+      ctx.fillStyle='rgba(255,215,0,.45)';
+      ctx.font='9px Bebas Neue,monospace'; ctx.textAlign='right';
+      ctx.fillText(i,cx-pw/2-14,y+3.5);
+    }
+  }
+  ctx.textAlign='left';
+}
+
+// ─── Climber stick figure ─────────────
+// anim: 0=neutral, 1=happy(arms up), -1=sad(slipping)
+function drawClimber(ctx,x,y,col,anim=0){
+  const ls = anim===-1 ? 16 : 10;
+  const ar = anim===1  ? -14 : anim===-1 ? 6 : 0;
+  const tl = anim===-1 ? 10 : 0;   // tilt for slip
+
+  ctx.save();
+  ctx.translate(x,y);
+  if(anim===-1) ctx.rotate(.18);
+
+  // shadow
+  ctx.fillStyle='rgba(0,0,0,.35)';
+  ctx.beginPath(); ctx.ellipse(0,2,7,3,0,0,Math.PI*2); ctx.fill();
+
+  // head
+  ctx.fillStyle=col;
+  ctx.beginPath(); ctx.arc(0,-15,8,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='rgba(0,0,0,.4)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.arc(0,-15,8,0,Math.PI*2); ctx.stroke();
+
+  // eyes
+  ctx.fillStyle='#140810';
+  ctx.beginPath(); ctx.arc(-3,-17,1.5,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc( 3,-17,1.5,0,Math.PI*2); ctx.fill();
+
+  // mouth
+  ctx.strokeStyle='#140810'; ctx.lineWidth=1.5;
+  ctx.beginPath();
+  if(anim===1)       ctx.arc(0,-12,3,0,Math.PI);       // big smile
+  else if(anim===-1) ctx.arc(0,-11,3,Math.PI,0);       // frown
+  else               ctx.arc(0,-12,3,.15,Math.PI-.15); // smile
+  ctx.stroke();
+
+  // body
+  ctx.strokeStyle=C.pole; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(0,-7); ctx.lineTo(0,8); ctx.stroke();
+
+  // arms
+  ctx.strokeStyle=col; ctx.lineWidth=2.5;
+  ctx.beginPath();
+  ctx.moveTo(-11,ar); ctx.quadraticCurveTo(-5,-3+ar/2,0,-4); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(11,1+ar); ctx.quadraticCurveTo(6,-1+ar/2,0,-2); ctx.stroke();
+
+  // legs
+  ctx.strokeStyle=C.pole; ctx.lineWidth=2.5;
+  ctx.beginPath();
+  ctx.moveTo(0,8); ctx.quadraticCurveTo(-4,13,-ls*.7,18); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(0,8); ctx.quadraticCurveTo(4,12, ls*.7,17); ctx.stroke();
+
+  ctx.restore();
+}
+
+// ─── All player markers on pole ───────
+function drawPlayers(ctx,cx,top,bot,pw,max=6,showRank=false){
+  const vis=PL.slice(0,max);
+  vis.forEach((p,i)=>{
+    const y=sY(p.score,top,bot);
+    const col=PCOLS[i%PCOLS.length];
+    const sd=i%2===0?1:-1;
+    const nx=cx+sd*(pw/2+20);
+    const nm=p.name.length>12?p.name.slice(0,11)+'…':p.name;
+
+    // connector
+    ctx.setLineDash([3,2]); ctx.strokeStyle=col+'88'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(cx+sd*pw/2,y); ctx.lineTo(nx,y); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // circle
+    ctx.fillStyle=col;
+    ctx.beginPath(); ctx.arc(nx,y,13,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='rgba(0,0,0,.3)'; ctx.font='bold 10px Bebas Neue,monospace';
+    ctx.textAlign='center'; ctx.fillText(p.score,nx,y+4);
+
+    // name
+    const tx=sd>0?nx+17:nx-17, ta=sd>0?'start':'end';
+    ctx.fillStyle='rgba(255,240,220,.85)';
+    ctx.font='11px Noto Sans Sinhala,sans-serif';
+    ctx.textAlign=ta; ctx.fillText(nm,tx,y+4);
+    if(showRank){
+      ctx.fillStyle='rgba(200,136,154,.6)'; ctx.font='9px Bebas Neue,monospace';
+      ctx.fillText('#'+(i+1),tx,y+15);
+    }
+    ctx.textAlign='left';
+  });
+
+  // crown on top player
+  if(PL.length>0){
+    const y=sY(PL[0].score,top,bot);
+    const nx=cx+1*(pw/2+20);
+    ctx.font='16px serif'; ctx.textAlign='center';
+    ctx.fillText('👑',nx,y-20); ctx.textAlign='left';
+  }
+}
+
+// ─── Score progress fill ──────────────
+function drawFill(ctx,cx,top,bot,pw,score){
+  if(score<=0) return;
+  const fh=(score/10)*(bot-top);
+  const g=ctx.createLinearGradient(0,bot-fh,0,bot);
+  g.addColorStop(0,'rgba(255,215,0,.55)');
+  g.addColorStop(1,'rgba(141,21,58,.25)');
+  ctx.fillStyle=g;
+  rr(ctx,cx-pw/2,bot-fh,pw,fh,3); ctx.fill();
+}
+
+// ─── Draw flag pole line ──────────────
+function drawPoleLine(ctx,cx,top,flagH){
+  ctx.strokeStyle='#8B5A3A'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(cx,top); ctx.lineTo(cx,top-flagH); ctx.stroke();
+}
+
+/* ══════════════════════════════════════════════════════
+   SCREEN DRAW FUNCTIONS
+══════════════════════════════════════════════════════ */
+function drawW(){
+  const cv=document.getElementById('cv-w'); if(!cv) return;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const cx=150,top=70,bot=358,pw=18;
+
+  // decorative orbs
+  ctx.fillStyle='rgba(255,127,0,.07)'; ctx.beginPath(); ctx.arc(258,18,20,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='rgba(0,165,80,.07)';  ctx.beginPath(); ctx.arc(38,60,16,0,Math.PI*2); ctx.fill();
+
+  drawGround(ctx,cx,bot);
+  drawPole(ctx,cx,top,bot,pw);
+  drawRuler(ctx,cx,top,bot,pw);
+  drawPoleLine(ctx,cx,top,50);
+  drawFlag(ctx,cx-pw/2,top-52,68,44);
+
+  if(PL.length===0){
+    ctx.fillStyle='rgba(200,136,154,.55)';
+    ctx.font='13px Noto Sans Sinhala,sans-serif'; ctx.textAlign='center';
+    ctx.fillText('ලිස්සන ගහ...',cx+42,(top+bot)/2-5);
+    ctx.fillText('ඉහළ යමු! 🚀',cx+42,(top+bot)/2+16);
+    ctx.textAlign='left';
+  }else{
+    drawPlayers(ctx,cx,top,bot,pw,6,false);
+  }
+}
+
+function drawG(lastOk=null){
+  const cv=document.getElementById('cv-g'); if(!cv) return;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const cx=26,top=28,bot=248,pw=12;
+
+  drawGround(ctx,cx,bot);
+  drawPole(ctx,cx,top,bot,pw);
+  drawPoleLine(ctx,cx,top,26);
+  drawFlag(ctx,cx-pw/2,top-26,36,22);
+
+  // tick marks
+  ctx.strokeStyle='rgba(255,215,0,.25)'; ctx.lineWidth=.7;
+  for(let i=0;i<=10;i++){
+    const y=bot-(i/10)*(bot-top);
+    ctx.beginPath(); ctx.moveTo(cx+pw/2,y); ctx.lineTo(cx+pw/2+5,y); ctx.stroke();
+  }
+
+  drawFill(ctx,cx,top,bot,pw,G.score);
+
+  const cy=sY(G.score,top,bot);
+  const anim=lastOk===null?0:lastOk?1:-1;
+  drawClimber(ctx,cx,cy,C.gold,anim);
+
+  ctx.fillStyle='rgba(255,215,0,.75)'; ctx.font='bold 10px Bebas Neue,monospace';
+  ctx.textAlign='center'; ctx.fillText(`${G.score}/10`,cx,bot+18); ctx.textAlign='left';
+}
+
+function drawR(){
+  const cv=document.getElementById('cv-r'); if(!cv) return;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const cx=72,top=42,bot=288,pw=16;
+
+  drawGround(ctx,cx,bot);
+  drawPole(ctx,cx,top,bot,pw);
+  drawRuler(ctx,cx,top,bot,pw);
+  drawPoleLine(ctx,cx,top,44);
+  drawFlag(ctx,cx-pw/2,top-46,60,38);
+  drawFill(ctx,cx,top,bot,pw,G.score);
+
+  const cy=sY(G.score,top,bot);
+  const col=G.score>=8?'#FFD700':G.score>=5?'#C0C0C0':'#CD7F32';
+  const anim=G.score>=8?1:G.score>=5?0:-1;
+  drawClimber(ctx,cx,cy,col,anim);
+
+  ctx.fillStyle='rgba(255,215,0,.9)'; ctx.font='bold 14px Bebas Neue,monospace';
+  ctx.textAlign='right'; ctx.fillText(`${G.score}/10`,cv.width-6,cy+4);
+
+  const nm=G.name.length>16?G.name.slice(0,15)+'…':G.name;
+  ctx.fillStyle='rgba(200,136,154,.75)'; ctx.font='12px Noto Sans Sinhala,sans-serif';
+  ctx.textAlign='center'; ctx.fillText(nm,cx,bot+20); ctx.textAlign='left';
+}
+
+function drawLB(){
+  const cv=document.getElementById('cv-lb'); if(!cv) return;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const cx=160,top=72,bot=358,pw=18;
+
+  ctx.fillStyle='rgba(255,127,0,.06)'; ctx.beginPath(); ctx.arc(295,18,18,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='rgba(0,165,80,.06)';  ctx.beginPath(); ctx.arc(38,60,14,0,Math.PI*2); ctx.fill();
+
+  drawGround(ctx,cx,bot);
+  drawPole(ctx,cx,top,bot,pw);
+  drawRuler(ctx,cx,top,bot,pw);
+  drawPoleLine(ctx,cx,top,52);
+  drawFlag(ctx,cx-pw/2,top-54,70,46);
+
+  if(PL.length>0) drawPlayers(ctx,cx,top,bot,pw,7,true);
+  else{
+    ctx.fillStyle='rgba(200,136,154,.5)'; ctx.font='13px Noto Sans Sinhala,sans-serif';
+    ctx.textAlign='center'; ctx.fillText('ක්‍රීඩකයන් නොමැත',cx,(top+bot)/2); ctx.textAlign='left';
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   CONFETTI
+══════════════════════════════════════════════════════ */
+function confetti(){
+  const cols=['#FFD700','#8D153A','#00A550','#FF7F00','#ffffff','#CE93D8','#64B5F6'];
+  for(let i=0;i<70;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div'); el.className='cf';
+      el.style.left=Math.random()*100+'vw';
+      el.style.background=cols[Math.floor(Math.random()*cols.length)];
+      el.style.width=(Math.random()*10+5)+'px'; el.style.height=(Math.random()*10+5)+'px';
+      el.style.borderRadius=Math.random()>.5?'50%':'2px';
+      el.style.animationDuration=(Math.random()*2+2.5)+'s';
+      el.style.animationDelay=(Math.random()*.8)+'s';
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(),4500);
+    },i*25);
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   KEYBOARD
+══════════════════════════════════════════════════════ */
+document.getElementById('inp-n').addEventListener('keydown',e=>{if(e.key==='Enter')startGame();});
+document.getElementById('adm-p').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('adm-u').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('adm-p').focus();});
+
+/* ══════════════════════════════════════════════════════
+   BOOT
+══════════════════════════════════════════════════════ */
+initFB();
+loadPL().then(()=>drawW());
+
+</script>
+
+<!--
+╔══════════════════════════════════════════════════════════════╗
+║  🔥 FIREBASE SETUP (for LIVE shared leaderboard)            ║
+╠══════════════════════════════════════════════════════════════╣
+║  1. https://firebase.google.com → Create Project            ║
+║  2. Add Web App → Copy firebaseConfig                       ║
+║  3. Build → Realtime Database → Create                      ║
+║  4. Rules tab → Paste:                                      ║
+║     { "rules": { ".read": true, ".write": true } }          ║
+║  5. Replace FB_CFG in this file with your config            ║
+║  6. Push to GitHub → Enable Pages → Share link!             ║
+╠══════════════════════════════════════════════════════════════╣
+║  📦 GITHUB PAGES HOSTING                                    ║
+║  1. github.com → New repo → name: pfund-ulela               ║
+║  2. Upload this index.html                                  ║
+║  3. Settings → Pages → Branch: main → /root → Save         ║
+║  4. Link: https://YOUR_USERNAME.github.io/pfund-ulela       ║
+║  5. Share on WhatsApp! 🎉                                   ║
+╚══════════════════════════════════════════════════════════════╝
+-->
+</body>
+</html>
