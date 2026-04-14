@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
 
-<!-- Firebase (for shared real-time leaderboard) -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
@@ -246,7 +245,6 @@ canvas { max-width:100%; display:block; }
 <body>
 <div id="app">
 
-<!-- ████ WELCOME SCREEN ████ -->
 <div id="sc-w" class="screen on">
   <div class="stripe"></div>
   <div class="hdr">
@@ -278,7 +276,6 @@ canvas { max-width:100%; display:block; }
 </div>
 
 
-<!-- ████ GAME SCREEN ████ -->
 <div id="sc-g" class="screen">
   <div class="stripe"></div>
   <div class="hdr">
@@ -287,11 +284,9 @@ canvas { max-width:100%; display:block; }
   </div>
 
   <div style="padding:14px;display:flex;gap:12px">
-    <!-- Mini pole -->
     <div style="flex-shrink:0">
       <canvas id="cv-g" width="52" height="270"></canvas>
     </div>
-    <!-- Questions -->
     <div style="flex:1;min-width:0">
       <div class="pbar-wrap"><div id="pbar" class="pbar" style="width:0%"></div></div>
       <p id="q-lbl" style="font-size:11px;color:var(--txt2);margin-bottom:5px"></p>
@@ -306,7 +301,6 @@ canvas { max-width:100%; display:block; }
 </div>
 
 
-<!-- ████ RESULTS SCREEN ████ -->
 <div id="sc-r" class="screen">
   <div class="stripe"></div>
   <div class="hdr">
@@ -328,7 +322,6 @@ canvas { max-width:100%; display:block; }
 </div>
 
 
-<!-- ████ LEADERBOARD SCREEN ████ -->
 <div id="sc-lb" class="screen">
   <div class="stripe"></div>
   <div class="hdr">
@@ -348,7 +341,6 @@ canvas { max-width:100%; display:block; }
 </div>
 
 
-<!-- ████ ADMIN SCREEN ████ -->
 <div id="sc-adm" class="screen">
   <div class="stripe"></div>
   <div class="hdr">
@@ -356,7 +348,6 @@ canvas { max-width:100%; display:block; }
     <sub>⚙ Admin Dashboard</sub>
   </div>
 
-  <!-- Login -->
   <div id="adm-lgn" style="padding:24px;max-width:280px;margin:0 auto">
     <p style="text-align:center;font-size:14px;color:var(--txt2);margin-bottom:16px">Admin Login</p>
     <input id="adm-u" class="inp" placeholder="Username" style="margin-bottom:8px" autocomplete="off"/>
@@ -368,7 +359,6 @@ canvas { max-width:100%; display:block; }
     </div>
   </div>
 
-  <!-- Dashboard -->
   <div id="adm-dsh" style="display:none;padding:14px">
     <div class="sc-grid" id="adm-stats"></div>
     <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--brd)">
@@ -386,33 +376,18 @@ canvas { max-width:100%; display:block; }
   </div>
 </div>
 
-</div><!-- #app -->
-
-
-<script>
+</div><script>
 /* ══════════════════════════════════════════════════════
    🔥 FIREBASE CONFIG
-   Replace below values with your Firebase project.
-   Leave as-is → falls back to localStorage (single device).
-   Setup guide at bottom of file.
 ══════════════════════════════════════════════════════ */
-const FB_CFG = {// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
+const FB_CFG = {
   apiKey: "AIzaSyByMTnOcOyXM11rSGj7YHpJ5rRaSgvLB2o",
   authDomain: "pfund-lissana-gaha-game.firebaseapp.com",
   databaseURL: "https://pfund-lissana-gaha-game-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "pfund-lissana-gaha-game",
-  storageBucket: "pfund-lissana-gaha-game.firebasestorage.app",
-  messagingSenderId: "693146425683",
-  appId: "1:693146425683:web:6577342f4bafbbdda429a6",
-  measurementId: "G-9Y1L6Z2F9X"
+  appId: "1:693146425683:web:6577342f4bafbbdda429a6"
 };
-  apiKey:      "YOUR_FIREBASE_API_KEY",
-  authDomain:  "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId:   "YOUR_PROJECT_ID",
-  appId:       "YOUR_APP_ID"
-};
+
 const USE_FB = FB_CFG.apiKey !== "YOUR_FIREBASE_API_KEY";
 
 /* ══════════════════════════════════════════════════════
@@ -1148,26 +1123,5 @@ initFB();
 loadPL().then(()=>drawW());
 
 </script>
-
-<!--
-╔══════════════════════════════════════════════════════════════╗
-║  🔥 FIREBASE SETUP (for LIVE shared leaderboard)            ║
-╠══════════════════════════════════════════════════════════════╣
-║  1. https://firebase.google.com → Create Project            ║
-║  2. Add Web App → Copy firebaseConfig                       ║
-║  3. Build → Realtime Database → Create                      ║
-║  4. Rules tab → Paste:                                      ║
-║     { "rules": { ".read": true, ".write": true } }          ║
-║  5. Replace FB_CFG in this file with your config            ║
-║  6. Push to GitHub → Enable Pages → Share link!             ║
-╠══════════════════════════════════════════════════════════════╣
-║  📦 GITHUB PAGES HOSTING                                    ║
-║  1. github.com → New repo → name: pfund-ulela               ║
-║  2. Upload this index.html                                  ║
-║  3. Settings → Pages → Branch: main → /root → Save         ║
-║  4. Link: https://YOUR_USERNAME.github.io/pfund-ulela       ║
-║  5. Share on WhatsApp! 🎉                                   ║
-╚══════════════════════════════════════════════════════════════╝
--->
 </body>
 </html>
